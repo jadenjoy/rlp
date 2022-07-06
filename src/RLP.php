@@ -2,9 +2,9 @@
 
 /**
  * This file is part of rlp package.
- * 
+ *
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -18,42 +18,42 @@ use Web3p\RLP\Types\Numeric;
 
 /**
  * It's a instance for ethereum recursive length encoding.
- * 
+ *
  * RLP encode:
- * 
+ *
  * ```php
  * use Web3p\RLP\RLP;
 
  * $rlp = new RLP;
  * // c483646f67
  * $encoded = $rlp->encode(['dog']);
- * 
+ *
  * // 83646f67
  * $encoded = $rlp->encode('dog');
  * ```
- * 
+ *
  * RLP decode:
- * 
+ *
  * ```php
  * use Web3p\RLP\RLP;
  * use Web3p\RLP\Types\Str;
- * 
+ *
  * $rlp = new RLP;
  * $encoded = $rlp->encode(['dog']);
- * 
+ *
  * // only accept 0x prefixed hex string
  * $decoded = $rlp->decode('0x' . $encoded);
- * 
+ *
  * // show 646f67
  * echo $decoded[0];
- * 
+ *
  * // show dog
  * echo hex2bin($decoded[0]);
- * 
+ *
  * // or you can
  * echo Str::decodeHex($decoded[0]);
  * ```
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @link https://www.web3p.xyz
  * @filesource https://github.com/web3p/rlp
@@ -201,10 +201,10 @@ class RLP
 
     /**
      * Return RLP encoded the length of data.
-     * 
+     *
      * @param int $length length of data
      * @param int $offset offset of data
-     * @return string hex encoded of the length 
+     * @return string hex encoded of the length
      */
     protected function encodeLength(int $length, int $offset)
     {
@@ -218,7 +218,7 @@ class RLP
 
     /**
      * Return hex of the given integer.
-     * 
+     *
      * @param int $input integer
      * @return string hex encoded of the input
      */
@@ -231,7 +231,7 @@ class RLP
 
     /**
      * Pad hex encoded data to even length (add 0).
-     * 
+     *
      * @param string $input hex encoded string
      * @return string hex encoded string
      */
@@ -251,7 +251,9 @@ class RLP
      */
     protected function encodeInput($input)
     {
-        if (is_string($input)) {
+        if ($this->isBinary($input)) {
+            return Str::encode($input, 'bin');
+        } elseif (is_string($input)) {
             if (strpos($input, '0x') === 0) {
                 return Str::encode($input, 'hex');
             }
@@ -262,5 +264,14 @@ class RLP
             return '';
         }
         throw new InvalidArgumentException('The input type didn\'t support.');
+    }
+
+    /**
+     * @param $value
+     * @return bool
+     */
+    function isBinary($value): bool
+    {
+        return false === mb_detect_encoding((string)$value, null, true);
     }
 }

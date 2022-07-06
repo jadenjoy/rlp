@@ -2,9 +2,9 @@
 
 /**
  * This file is part of rlp package.
- * 
+ *
  * (c) Kuan-Cheng,Lai <alk03073135@gmail.com>
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @license MIT
  */
@@ -16,7 +16,7 @@ use InvalidArgumentException;
 /**
  * It's a string type instance for ethereum recursive length encoding.
  * Note: there is only static function in this class.
- * 
+ *
  * @author Peter Lai <alk03073135@gmail.com>
  * @link https://www.web3p.xyz
  * @filesource https://github.com/web3p/rlp
@@ -30,35 +30,38 @@ class Str
      * @param string $encoding encoding
      * @return string encoded string of given input and encoding
      */
-    static function encode(string $input, string $encoding='utf8')
+    static function encode(string $input, string $encoding = 'utf8')
     {
         $output = '';
         switch ($encoding) {
             case 'hex':
-            if (strpos($input, '0x') === 0) {
-                $input = str_replace('0x', '', $input);
-            }
-            if (mb_strlen($input) > 2) {
-                $input = ltrim($input, '0');
-            }
-            $output = $input;
+                if (strpos($input, '0x') === 0) {
+                    $input = str_replace('0x', '', $input);
+                }
+                if (mb_strlen($input) > 2) {
+                    $input = ltrim($input, '0');
+                }
+                $output = $input;
 
-            break;
+                break;
             case 'ascii':
-            $outputs = array_map('ord', str_split($input, 1));
-            foreach ($outputs as $src) {
-                $output .= dechex($src);
-            }
-            break;
+                $outputs = array_map('ord', str_split($input, 1));
+                foreach ($outputs as $src) {
+                    $output .= dechex($src);
+                }
+                break;
             case 'utf8':
-            $outputs = unpack('C*', $input);
-            foreach ($outputs as $src) {
-                $output .= dechex($src);
-            }
-            break;
+                $outputs = unpack('C*', $input);
+                foreach ($outputs as $src) {
+                    $output .= dechex($src);
+                }
+                break;
+            case "bin":
+                $output = bin2hex($input);
+                break;
             default:
-            throw new InvalidArgumentException('Didn\'t support the encoding.');
-            break;
+                throw new InvalidArgumentException('Didn\'t support the encoding.');
+                break;
         }
         $outputLen = mb_strlen($output);
         if ($outputLen > 0 && $outputLen % 2 !== 0) {
